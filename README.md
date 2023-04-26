@@ -1,4 +1,6 @@
-C - SIMPLE SHELL
+![gate of shell](https://user-images.githubusercontent.com/104713477/232478585-7f235962-bbf2-46cc-9424-4aa4a3546e41.jpeg)
+C - SIMPLE SHELL:
+
 The shell is a command line interface (CLI) program that takes commands from the keyboard and gives them to the operating system to perform.
 A shell is a messanger between the user, the kernel and the machine.
 
