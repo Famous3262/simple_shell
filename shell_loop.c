@@ -195,22 +195,18 @@ int is_cmd(info_t *info, char *path)
  */
 char *dup_chars(char *pathstr, int start, int stop)
 {
-	char *buf = malloc(stop - start + 1);
-	int j = 0;
+	static char buf[1024];
+	int s = 0, j = 0;
 
-	for (int s = start; s < stop; s++)
-	{
+	for (j = 0, s = start; s < stop; s++)
 		if (pathstr[s] != ':')
-		{
 			buf[j++] = pathstr[s];
-		}
-	}
 	buf[j] = 0;
 	return (buf);
 }
 
 /**
- * find_path - finds this command in the PATH string
+ * find_path - A function to find the command in the PATH string
  * @info: pointer to the info structure
  * @pathstr: pointer to the PATH string
  * @cmd: the command to find
@@ -219,24 +215,21 @@ char *dup_chars(char *pathstr, int start, int stop)
  */
 char *find_path(info_t *info, char *pathstr, char *cmd)
 {
+	int a = 0, curr_pos = 0;
+	char *path;
+
 	if (!pathstr)
 		return (NULL);
-
 	if ((_strlen(cmd) > 2) && starts_with(cmd, "./"))
 	{
 		if (is_cmd(info, cmd))
 			return (cmd);
 	}
-
-	char *path = NULL;
-	int j = 0;
-	int curr_pos = 0;
-
-	while (pathstr[j])
+	while (1)
 	{
-		if (!pathstr[j] == ':')
+		if (!pathstr[a] || pathstr[a] == ':')
 		{
-			path = dup_chars(pathstr, curr_pos, j);
+			path = dup_chars(pathstr, curr_pos, a);
 			if (!*path)
 				_strcat(path, cmd);
 			else
@@ -246,25 +239,11 @@ char *find_path(info_t *info, char *pathstr, char *cmd)
 			}
 			if (is_cmd(info, path))
 				return (path);
-			curr_pos = j + 1;
+			if (!pathstr[a])
+				break;
+			curr_pos = a;
 		}
-		j++;
+		a++;
 	}
-
-	/* Handle the last path in the PATH string */
-	if (curr_pos < j)
-	{
-		path = dup_chars(pathstr, curr_pos, j);
-		if (!*path)
-			_strcat(path, cmd);
-		else
-		{
-			_strcat(path, "/");
-			_strcat(path, cmd);
-		}
-		if (is_cmd(info, path))
-			return (path);
-	}
-
 	return (NULL);
 }

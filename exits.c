@@ -40,21 +40,21 @@ char *_strncpy(char *dest, char *src, int n)
  */
 char *_strncat(char *dest, char *src, int n)
 {
-	char *result = dest;
-	int dest_len = strlen(dest);
+	char *s = dest;
+	int i = 0;
+	int k = 0;
 
-	/* Move destination pointer to the end of the string */
-	while (*dest != '\0')
-		dest++;
-
-	while (*src != '\0' && n > 0)
+	while (dest[i] != '\0')
+		i++;
+	while (src[k] != '\0' && k < n)
 	{
-		*dest++ = *src++;
-		n--;
+		dest[i] = src[k];
+		i++;
+		k++;
 	}
-	*dest = '\0';
-
-	return (result);
+	if (k < n)
+		dest[i] = '\0';
+	return (s);
 }
 
 /**

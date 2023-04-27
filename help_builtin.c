@@ -126,17 +126,19 @@ int _myhistory(info_t *info)
  */
 int unset_alias(info_t *info, char *str)
 {
-	char *r = strchr(str, '=');
-	int d;
+	char *p, cee;
+	int ret;
 
-	if (!r)
+	p = _strchr(str, '=');
+	if (!p)
 		return (1);
-	char j = *r;
-	*r = 0;
-	d = delete_node_at_index(&(info->alias),
+	cee = *p;
+	*p = 0;
+	ret = delete_node_at_index(&(info->alias),
 		get_node_index(info->alias, node_starts_with(info->alias, str, -1)));
-	*r = j;
-	return (d);
+	*p = cee;
+	return (ret);
+
 }
 
 /**
@@ -147,44 +149,40 @@ int unset_alias(info_t *info, char *str)
  */
 int print_alias(list_t *node)
 {
-	if (node == NULL)
-		return (1);
+	char *p = NULL, *c = NULL;
 
-	char *equals_pos = strchr(node->str, '=');
-
-	if (equals_pos == NULL)
-		return (1);
-
-	size_t key_len = equals_pos - node->str;
-
-	printf("%.*s'", (int) key_len, node->str);
-	_puts(equals_pos + 1);
-	_puts("'");
-
-	return (0);
+	if (node)
+	{
+		p = _strchr(node->str, '=');
+		for (c = node->str; c <= p; c++)
+		_putchar(*c);
+		_putchar('\'');
+		_puts(p + 1);
+		_puts("'\n");
+		return (0);
+	}
+	return (1);
 }
 
 /**
- * set_alias - set alias to string
- * @info: parameter struct
+ * set_alias - function that sets alias to string
+ * @info: pointer to the parameter structure
  * @str: the string alias
  *
- * Return: Always 0 on success, 1 on error
+ * Return: 0 on success, 1 on error
  */
 int set_alias(info_t *info, char *str)
 {
-	char *equals_pos = strchr(str, '=');
+	char *p;
 
-	if (equals_pos == NULL)
+	p = _strchr(str, '=');
+	if (!p)
 		return (1);
-
-	char *value_str = equals_pos + 1;
-
-	if (*value_str == '\0')
+	if (!*++p)
 		return (unset_alias(info, str));
 
 	unset_alias(info, str);
-	return (add_node_end(&(info->alias), str, 0) != NULL ? 0 : 1);
+	return (add_node_end(&(info->alias), str, 0) == NULL);
 }
 
 /**
