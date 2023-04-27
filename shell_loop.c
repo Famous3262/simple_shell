@@ -16,9 +16,9 @@ int hsh(info_t *info, char **av)
 	{
 		clear_info(info);
 
-		if (inter_mode(info))
+		if (interactive(info))
 			_puts("$ ");
-		eput_char(BUFFER_FLUSH);
+		_eputchar(BUF_FLUSH);
 
 		i = get_input(info);
 
@@ -29,7 +29,7 @@ int hsh(info_t *info, char **av)
 			if (builtin_ret == -1)
 				find_cmd(info);
 		}
-		else if (inter_mode(info))
+		else if (interactive(info))
 			_putchar('\n');
 
 		free_info(info, 0);
@@ -37,7 +37,7 @@ int hsh(info_t *info, char **av)
 	write_history(info);
 	free_info(info, 1);
 
-	if (!inter_mode(info) && info->status)
+	if (!interactive(info) && info->status)
 		exit(info->status);
 
 	if (builtin_ret == -2)
@@ -62,16 +62,16 @@ int find_builtin(info_t *info)
 {
 	int s, built_in_ret = -1;
 
-	 builtin_t builtin[] = {
-		 {"exit", shell_exit},
-		 {"env", print_env},
-		 {"help", help},
-		 {"history", hist_list},
-		 {"setenv", set_env},
-		 {"unsetenv", unset_env},
-		 {"cd", change_dir},
-		 {"alias", alias},
-		 {NULL, NULL}
+	 builtin_table builtin[] = {
+		{"exit", _myexit},
+		{"env", _myenv},
+		{"help", _myhelp},
+		{"history", _myhistory},
+		{"setenv", _mysetenv},
+		{"unsetenv", _myunsetenv},
+		{"cd", _mycd},
+		{"alias", _myalias},
+		{NULL, NULL}
 	};
 
 	for (s = 0; builtin[s].type; s++)
@@ -105,12 +105,12 @@ void find_cmd(info_t *info)
 		info->linecount_flag = 0;
 	}
 	for (d = 0, j = 0; info->arg[d]; d++)
-		if (!check_delim(info->arg[d], " \t\n"))
+		if (!is_delim(info->arg[d], " \t\n"))
 		j++;
 	if (!j)
 		return;
 
-	path = find_path(info, get_env(info, "PATH="), info->argv[0]);
+	path = find_path(info, _getenv(info, "PATH="), info->argv[0]);
 	if (path)
 	{
 		info->path = path;
@@ -118,7 +118,7 @@ void find_cmd(info_t *info)
 	}
 	else
 	{
-		if ((inter_mode(info) || get_env(info, "PATH=")
+		if ((interactive(info) || _getenv(info, "PATH=")
 					|| info->argv[0][0] == '/') && is_cmd(info, info->argv[0]))
 			fork_cmd(info);
 		else if (*(info->arg) != '\n')
@@ -186,7 +186,7 @@ int is_cmd(info_t *info, char *path)
 }
 
 /**
- * dup_chars - duplicates characters
+ * dup_chars - function duplicates characters
  * @pathstr: pointer to the PATH string
  * @start: starting index
  * @stop: stopping index

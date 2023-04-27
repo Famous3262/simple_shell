@@ -59,7 +59,7 @@ ssize_t get_input(info_t *info)
 	ssize_t r = 0;
 	char **buf_p = &(info->arg), *p;
 
-	_putchar(BUFFER_FLUSH);
+	_putchar(BUF_FLUSH);
 	r = input_buf(info, &buf, &len);
 	if (r == -1)
 	{
@@ -78,7 +78,7 @@ ssize_t get_input(info_t *info)
 
 		while (s < len) /* iterate to semicolon or end */
 		{
-			if (chain_delim(info, buf, &s))
+			if (is_chain(info, buf, &s))
 				break;
 		}
 		s++;
@@ -115,7 +115,7 @@ ssize_t read_buf(info_t *info, char *buf, size_t *s)
 
 	if (*s)
 		return (0);
-	r = read(info->readfd, buf, READ_BUFFER_SIZE);
+	r = read(info->readfd, buf, READ_BUF_SIZE);
 
 	if (r >= 0)
 		*s = r;
@@ -132,7 +132,7 @@ ssize_t read_buf(info_t *info, char *buf, size_t *s)
  */
 int _getline(info_t *info, char **ptr, size_t *length)
 {
-	static char buf[READ_BUFFER_SIZE];
+	static char buf[READ_BUF_SIZE];
 	static size_t j, len;
 	size_t n;
 	ssize_t r = 0, s = 0;
@@ -178,5 +178,5 @@ int _getline(info_t *info, char **ptr, size_t *length)
 void sigintHandler(__attribute__((unused))int sig_num)
 {
 	_puts("\n$ ");
-	_putchar(BUFFER_FLUSH);
+	_putchar(BUF_FLUSH);
 }

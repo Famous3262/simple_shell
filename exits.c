@@ -8,9 +8,9 @@
  *
  *Return: The concatenated string
  */
-char *_strncpy(char *dest, char *src, size_t n)
+char *_strncpy(char *dest, char *src, int n)
 {
-	size_t j, k;
+	int j, k;
 	char *d = dest;
 
 	j = 0;
@@ -38,10 +38,10 @@ char *_strncpy(char *dest, char *src, size_t n)
  *@n: Number of bytes to be used
  *Return: The concatenated string
  */
-char *_strncat(char *dest, char *src, size_t n)
+char *_strncat(char *dest, char *src, int n)
 {
 	char *result = dest;
-	size_t dest_len = strlen(dest);
+	int dest_len = strlen(dest);
 
 	/* Move destination pointer to the end of the string */
 	while (*dest != '\0')

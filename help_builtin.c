@@ -1,14 +1,14 @@
 #include "temp.h"
 
 /**
- * shell_exit - exits the shell
+ * _myexit - fumction exits the shell
  * @info: potential arguments used to maintain
  * constant function prototype.
  *
  * Return: exits with a given exit status
- * (0) if info.argv[0] != "exit"
+ *	 (0) if info.argv[0] != "exit"
  */
-int shell_exit(info_t *info)
+int _myexit(info_t *info)
 {
 	int exit = 0;
 	int result = -2;
@@ -38,12 +38,12 @@ int shell_exit(info_t *info)
 }
 
 /**
- * change_dir - changes current directory of the process
- * @info: Structure containing potential arguments used to maintain
- * constant function prototype.
+ * _mycd - function changes current directory of the process
+ * @info: Structure containing potential arguments
+ *
  * Return: Always 0
  */
-int change_dir(info_t *info)
+int _mycd(info_t *info)
 {
 	char *dir;
 	int cd = 0;
@@ -88,12 +88,12 @@ int change_dir(info_t *info)
 }
 
 /**
- * help - changes the current directory of the process
- * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
+ *_ myhelp - function changes the current directory of the process
+ * @info: Structure containing potential arguments
+ *
  * Return: Always 0
  */
-int help(info_t *info)
+int _myhelp(info_t *info)
 {
 	char **arg_array = info->argv;
 
@@ -105,26 +105,26 @@ int help(info_t *info)
 }
 
 /**
- * hist_list - displays the history list, one command by line, preceded
+ * _myhistory - displays the history list, one command by line, preceded
  *              with line numbers, starting at 0.
  * @info: Structure containing potential arguments.
  *
- * Return: Always 0
+ * Return: 0 on success
  */
-int hist_list(info_t *info)
+int _myhistory(info_t *info)
 {
 	print_list(info->history);
 	return (0);
 }
 
 /**
- * onset_alias - sets alias to string
- * @info: parameter struct
+ * unset_alias - function sets alias to string
+ * @info: parameter structure
  * @str: the string alias
  *
  * Return: Always 0 on success, 1 on error
  */
-int onset_alias(info_t *info, char *str)
+int unset_alias(info_t *info, char *str)
 {
 	char *r = strchr(str, '=');
 	int d;
@@ -140,8 +140,8 @@ int onset_alias(info_t *info, char *str)
 }
 
 /**
- * print_alias - prints alias string
- * @node: the alias node
+ * print_alias - function prints alias string
+ * @node: pointer to the alias node
  *
  * Return: Always 0 on success, 1 on error
  */
@@ -158,8 +158,8 @@ int print_alias(list_t *node)
 	size_t key_len = equals_pos - node->str;
 
 	printf("%.*s'", (int) key_len, node->str);
-	puts(equals_pos + 1);
-	puts("'");
+	_puts(equals_pos + 1);
+	_puts("'");
 
 	return (0);
 }
@@ -181,19 +181,19 @@ int set_alias(info_t *info, char *str)
 	char *value_str = equals_pos + 1;
 
 	if (*value_str == '\0')
-		return (onset_alias(info, str));
+		return (unset_alias(info, str));
 
-	onset_alias(info, str);
+	unset_alias(info, str);
 	return (add_node_end(&(info->alias), str, 0) != NULL ? 0 : 1);
 }
 
 /**
- * alias - mimics the alias builtin (man alias)
+ *_myalias - mimics the alias builtin (man alias)
  * @info: Structure containing potential arguments. Used to maintain
  *          constant function prototype.
  *  Return: Always 0
  */
-int alias(info_t *info)
+int _myalias(info_t *info)
 {
 	int a;
 	char *p;

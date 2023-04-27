@@ -1,33 +1,33 @@
 #include "temp.h"
 
 /**
- * put_string - prints an input string
+ * _eputs - prints an input string
  * @str: the string to be printed
  *
  * Return: Nothing
  */
-void put_string(char *str)
+void _eputs(char *str)
 {
 	if (str == NULL)
 		return;
 
 	for (; *str != '\0'; str++)
 	{
-		eput_char(*str);
+		_eputchar(*str);
 	}
 }
 
 /**
- * eput_char - writes the character c to stderr
+ * _eputchar - function that writes the character c to stderr
  * @c: The character to print
  *
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
-int eput_char(char c)
+int _eputchar(char c)
 {
 	static int r;
-	static char buf[WRITE_BUFFER_SIZE];
+	static char buf[WRITE_BUF_SIZE];
 
 	/* Check if r is uninitialized */
 	if (r == 0)
@@ -36,29 +36,29 @@ int eput_char(char c)
 		/* e.g., r = 0; buf[0] = '\0'; */
 	}
 
-	if (c == BUFFER_FLUSH || r >= WRITE_BUFFER_SIZE)
+	if (c == BUF_FLUSH || r >= WRITE_BUF_SIZE)
 	{
 		write(2, buf, r);
 		r = 0;
 	}
-	if (c != BUFFER_FLUSH)
+	if (c != BUF_FLUSH)
 		buf[r++] = c;
 
 	return (1);
 }
 
 /**
- * put_file_desc - writes the character c to a given file descriptor
+ * _putfd - writes the character c to a given file descriptor
  * @c: character to print
  * @fd: file descriptor to write to
  *
  * Return: On success 1.
  *	   On error, -1 is returned, and errno is set appropriately.
  */
-int put_file_desc(char c, int fd)
+int _putfd(char c, int fd)
 {
 	static int r;
-	static char buf[WRITE_BUFFER_SIZE];
+	static char buf[WRITE_BUF_SIZE];
 
 	/* Check if r is uninitialized */
 	if (r == 0)
@@ -67,25 +67,25 @@ int put_file_desc(char c, int fd)
 		/* e.g., r = 0; buf[0] = '\0'; */
 	}
 
-	if (c == BUFFER_FLUSH || r >= WRITE_BUFFER_SIZE)
+	if (c == BUF_FLUSH || r >= WRITE_BUF_SIZE)
 	{
 		write(fd, buf, r);
 		r = 0;
 	}
-	if (c != BUFFER_FLUSH)
+	if (c != BUF_FLUSH)
 		buf[r++] = c;
 
 	return (1);
 }
 
 /**
- * str_fd - prints an input string
+ * _putsfd - function that prints an input string
  * @str: string to be printed
  * @fd: file descriptor to write to
  *
  * Return: number of chars input
  */
-int str_fd(char *str, int fd)
+int _putsfd(char *str, int fd)
 {
 	int a = 0;
 
@@ -94,18 +94,18 @@ int str_fd(char *str, int fd)
 
 	while (*str)
 	{
-		a += put_file_desc(*str++, fd);
+		a += _putfd(*str++, fd);
 	}
 	return (a);
 }
 
 /**
- * erratoi - converts a string to an integer
+ * _erratoi - converts a string to an integer
  * @s: string to be converted
  * Return: 0 if no numbers in string, converted number otherwise
  *	  -1 on error
  */
-int erratoi(char *s)
+int _erratoi(char *s)
 {
 	unsigned long int result = 0;
 
@@ -139,30 +139,30 @@ int erratoi(char *s)
  */
 void print_error(info_t *info, char *estr)
 {
-	put_string(info->fname);
-	put_string(": ");
-	print_dec(info->line_count, STDERR_FILENO);
-	put_string(": ");
-	put_string(info->argv[0]);
-	put_string(": ");
-	put_string(estr);
+	_eputs(info->fname);
+	_eputs(": ");
+	print_d(info->line_count, STDERR_FILENO);
+	_eputs(": ");
+	_eputs(info->argv[0]);
+	_eputs(": ");
+	_eputs(estr);
 }
 
 /**
- * print_dec - prints a decimal (integer) number (base 10)
+ * print_d - prints a decimal (integer) number (base 10)
  * @input: the input
  * @fd: the file descriptor to write to
  *
  * Return: number of characters printed
  */
-int print_dec(int input, int fd)
+int print_d(int input, int fd)
 {
 	int (*__putchar)(char) = _putchar;
 	int n, count = 0;
 	unsigned int _abs_, current;
 
 	if (fd == STDERR_FILENO)
-		__putchar = eput_char;
+		__putchar = _eputchar;
 
 	if (input < 0)
 	{
@@ -193,14 +193,14 @@ int print_dec(int input, int fd)
 }
 
 /**
- * convert_num - converter function, similar to itoa
+ * convert_number - converter function, similar to itoa
  * @num: number to convert
  * @base: base for the conversion
  * @flags: argument flags controlling the conversion
  *
  * Return: pointer to a string containing the number
  */
-char *convert_num(long int num, int base, int flags)
+char *convert_number(long int num, int base, int flags)
 {
 	static char *array;
 	static char buffer[50];
@@ -231,12 +231,12 @@ char *convert_num(long int num, int base, int flags)
 }
 
 /**
- * rem_comments - replaces first instance of '#' with '\0'
+ * remove_comments - replaces first instance of '#' with '\0'
  * @buf: address of the string to modify
  *
  * Return: nothing
  */
-void rem_comments(char *buf)
+void remove_comments(char *buf)
 {
 	int j = 0;
 
