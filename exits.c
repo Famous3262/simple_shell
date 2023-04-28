@@ -1,77 +1,74 @@
-#include "temp.h"
+#include "shell.h"
 
 /**
- **_strncpy - Function that copies a string
- *@dest: Destination string to be copied to
- *@src: Source string
- *@n: Amount of characters to be copied
- *
- *Return: The concatenated string
+ **_strncpy - copies a string
+ *@dest: the destination string to be copied to
+ *@src: the source string
+ *@n: the amount of characters to be copied
+ *Return: the concatenated string
  */
 char *_strncpy(char *dest, char *src, int n)
 {
-	int j, k;
-	char *d = dest;
+	int i, j;
+	char *s = dest;
 
-	j = 0;
-	while (src[j] != '\0' && j < n - 1)
+	i = 0;
+	while (src[i] != '\0' && i < n - 1)
 	{
-		dest[j] = src[j];
-		j++;
+		dest[i] = src[i];
+		i++;
 	}
-	if (j < n)
+	if (i < n)
 	{
-		k = j;
-		while (k < n)
+		j = i;
+		while (j < n)
 		{
-			dest[k] = '\0';
-			k++;
+			dest[j] = '\0';
+			j++;
 		}
 	}
-	return (d);
+	return (s);
 }
 
 /**
- **_strncat - Concatenates two strings
- *@dest: Pointer to the first string
- *@src: Points to the second string
- *@n: Number of bytes to be used
- *Return: The concatenated string
+ **_strncat - concatenates two strings
+ *@dest: the first string
+ *@src: the second string
+ *@n: the amount of bytes to be maximally used
+ *Return: the concatenated string
  */
 char *_strncat(char *dest, char *src, int n)
 {
+	int i, j;
 	char *s = dest;
-	int i = 0;
-	int k = 0;
 
+	i = 0;
+	j = 0;
 	while (dest[i] != '\0')
 		i++;
-	while (src[k] != '\0' && k < n)
+	while (src[j] != '\0' && j < n)
 	{
-		dest[i] = src[k];
+		dest[i] = src[j];
 		i++;
-		k++;
+		j++;
 	}
-	if (k < n)
+	if (j < n)
 		dest[i] = '\0';
 	return (s);
 }
 
 /**
- **_strchr - Locates a character in a string
- *@s: Pointer to the string to be parsed
- *@c: Character to look for
- *Return: A pointer to the memory area s,
- *	or NULL if the character is not found
+ **_strchr - locates a character in a string
+ *@s: the string to be parsed
+ *@c: the character to look for
+ *Return: (s) a pointer to the memory area s
  */
 char *_strchr(char *s, char c)
 {
-	while (*s != '\0')
-	{
+	do {
 		if (*s == c)
 			return (s);
-		s++;
-	}
+	} while (*s++ != '\0');
 
 	return (NULL);
 }

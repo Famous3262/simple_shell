@@ -1,17 +1,15 @@
-#include "temp.h"
+#include "shell.h"
 
 /**
- * **strtow - Function splits a string into words
- *		Repeated delimiters are ignored
- * @str: Input string
- * @d: Pointer to the delimeter string
- *
- * Return: A pointer to an array of strings, or NULL on failure
+ * **strtow - splits a string into words. Repeat delimiters are ignored
+ * @str: the input string
+ * @d: the delimeter string
+ * Return: a pointer to an array of strings, or NULL on failure
  */
 
 char **strtow(char *str, char *d)
 {
-	int i, n, k, r, numwords = 0;
+	int i, j, k, m, numwords = 0;
 	char **s;
 
 	if (str == NULL || str[0] == 0)
@@ -27,39 +25,38 @@ char **strtow(char *str, char *d)
 	s = malloc((1 + numwords) * sizeof(char *));
 	if (!s)
 		return (NULL);
-	for (i = 0, n = 0; n < numwords; n++)
+	for (i = 0, j = 0; j < numwords; j++)
 	{
 		while (is_delim(str[i], d))
 			i++;
 		k = 0;
 		while (!is_delim(str[i + k], d) && str[i + k])
 			k++;
-		s[n] = malloc((k + 1) * sizeof(char));
-		if (!s[n])
+		s[j] = malloc((k + 1) * sizeof(char));
+		if (!s[j])
 		{
-			for (k = 0; k < n; k++)
+			for (k = 0; k < j; k++)
 				free(s[k]);
 			free(s);
 			return (NULL);
 		}
-		for (r = 0; r < k; r++)
-			s[n][r] = str[i++];
-		s[n][r] = 0;
+		for (m = 0; m < k; m++)
+			s[j][m] = str[i++];
+		s[j][m] = 0;
 	}
-	s[n] = NULL;
+	s[j] = NULL;
 	return (s);
 }
 
 /**
- * **strtow2 - Function that splits a string into words
- * @str: Pointer to the input string
- * @d: The delimeter string
- *
- * Return: A pointer to an array of strings, or NULL on failure
+ * **strtow2 - splits a string into words
+ * @str: the input string
+ * @d: the delimeter
+ * Return: a pointer to an array of strings, or NULL on failure
  */
 char **strtow2(char *str, char d)
 {
-	int i, j, k, r, numwords = 0;
+	int i, j, k, m, numwords = 0;
 	char **s;
 
 	if (str == NULL || str[0] == 0)
@@ -88,9 +85,9 @@ char **strtow2(char *str, char d)
 			free(s);
 			return (NULL);
 		}
-		for (r = 0; r < k; r++)
-			s[j][r] = str[i++];
-		s[j][r] = 0;
+		for (m = 0; m < k; m++)
+			s[j][m] = str[i++];
+		s[j][m] = 0;
 	}
 	s[j] = NULL;
 	return (s);

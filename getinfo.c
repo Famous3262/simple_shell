@@ -1,8 +1,8 @@
-#include "temp.h"
+#include "shell.h"
 
 /**
- * clear_info - Function that initializes info_t structure
- * @info: The structure address
+ * clear_info - initializes info_t struct
+ * @info: struct address
  */
 void clear_info(info_t *info)
 {
@@ -13,35 +13,30 @@ void clear_info(info_t *info)
 }
 
 /**
- * set_info - Function that initializes info_t structure
- * @info: Address of the structure
- * @av: Argument vector
+ * set_info - initializes info_t struct
+ * @info: struct address
+ * @av: argument vector
  */
 void set_info(info_t *info, char **av)
 {
-	int j = 0;
+	int i = 0;
 
 	info->fname = av[0];
-
 	if (info->arg)
 	{
 		info->argv = strtow(info->arg, " \t");
-
 		if (!info->argv)
 		{
 			info->argv = malloc(sizeof(char *) * 2);
-
 			if (info->argv)
 			{
 				info->argv[0] = _strdup(info->arg);
 				info->argv[1] = NULL;
 			}
 		}
-
-		for (j = 0; info->argv && info->argv[j]; j++)
+		for (i = 0; info->argv && info->argv[i]; i++)
 			;
-
-		info->argc = j;
+		info->argc = i;
 
 		replace_alias(info);
 		replace_vars(info);
@@ -49,8 +44,8 @@ void set_info(info_t *info, char **av)
 }
 
 /**
- * free_info - Function that frees info_t structure fields
- * @info: Pointer to structure address
+ * free_info - frees info_t struct fields
+ * @info: struct address
  * @all: true if freeing all fields
  */
 void free_info(info_t *info, int all)
@@ -58,7 +53,6 @@ void free_info(info_t *info, int all)
 	ffree(info->argv);
 	info->argv = NULL;
 	info->path = NULL;
-
 	if (all)
 	{
 		if (!info->cmd_buf)

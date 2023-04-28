@@ -1,28 +1,25 @@
-#include "temp.h"
+#include "shell.h"
 
 /**
- * hsh - Main shell loop
- * @info: Pointer to the parameter and return info structure
- * @av: Argument vector from main()
+ * hsh - main shell loop
+ * @info: the parameter & return info struct
+ * @av: the argument vector from main()
  *
- * Return: 0 on success, 1 on error
+ * Return: 0 on success, 1 on error, or error code
  */
 int hsh(info_t *info, char **av)
 {
-	ssize_t i = 0;
+	ssize_t r = 0;
 	int builtin_ret = 0;
 
-	while (i != -1 && builtin_ret != -2)
+	while (r != -1 && builtin_ret != -2)
 	{
 		clear_info(info);
-
 		if (interactive(info))
 			_puts("$ ");
 		_eputchar(BUF_FLUSH);
-
-		i = get_input(info);
-
-		if (i != -1)
+		r = get_input(info);
+		if (r != -1)
 		{
 			set_info(info, av);
 			builtin_ret = find_builtin(info);
@@ -31,15 +28,12 @@ int hsh(info_t *info, char **av)
 		}
 		else if (interactive(info))
 			_putchar('\n');
-
 		free_info(info, 0);
 	}
 	write_history(info);
 	free_info(info, 1);
-
 	if (!interactive(info) && info->status)
 		exit(info->status);
-
 	if (builtin_ret == -2)
 	{
 		if (info->err_num == -1)
@@ -51,18 +45,17 @@ int hsh(info_t *info, char **av)
 
 /**
  * find_builtin - finds a builtin command
- * @info: the parameter & return info structure
+ * @info: the parameter & return info struct
  *
  * Return: -1 if builtin not found,
- *	0 if builtin executed successfully,
- *	1 if builtin found but not successful,
- *	2 if builtin signals exit()
+ * 	0 if builtin executed successfully,
+ * 	1 if builtin found but not successful,
+ * 	2 if builtin signals exit()
  */
 int find_builtin(info_t *info)
 {
-	int s, built_in_ret = -1;
-
-	 builtin_table builtin[] = {
+	int i, built_in_ret = -1;
+	builtin_table builtintbl[] = {
 		{"exit", _myexit},
 		{"env", _myenv},
 		{"help", _myhelp},
@@ -74,16 +67,13 @@ int find_builtin(info_t *info)
 		{NULL, NULL}
 	};
 
-	for (s = 0; builtin[s].type; s++)
-	{
-		if (_strcmp(info->argv[0], builtin[s].type) == 0)
+	for (i = 0; builtintbl[i].type; i++)
+		if (_strcmp(info->argv[0], builtintbl[i].type) == 0)
 		{
 			info->line_count++;
-			built_in_ret = builtin[s].func(info);
+			built_in_ret = builtintbl[i].func(info);
 			break;
 		}
-	}
-
 	return (built_in_ret);
 }
 
@@ -91,12 +81,12 @@ int find_builtin(info_t *info)
  * find_cmd - finds a command in PATH
  * @info: the parameter & return info struct
  *
- * Return: nothing
+ * Return: void
  */
 void find_cmd(info_t *info)
 {
 	char *path = NULL;
-	int d, j;
+	int i, k;
 
 	info->path = info->argv[0];
 	if (info->linecount_flag == 1)
@@ -104,10 +94,10 @@ void find_cmd(info_t *info)
 		info->line_count++;
 		info->linecount_flag = 0;
 	}
-	for (d = 0, j = 0; info->arg[d]; d++)
-		if (!is_delim(info->arg[d], " \t\n"))
-		j++;
-	if (!j)
+	for (i = 0, k = 0; info->arg[i]; i++)
+		if (!is_delim(info->arg[i], " \t\n"))
+			k++;
+	if (!k)
 		return;
 
 	path = find_path(info, _getenv(info, "PATH="), info->argv[0]);
@@ -130,10 +120,10 @@ void find_cmd(info_t *info)
 }
 
 /**
- * fork_cmd - forks a process to execute command
- * @info: pointer to parameter & return info structure
+ * fork_cmd - forks a an exec thread to run cmd
+ * @info: the parameter & return info struct
  *
- * Return: none
+ * Return: void
  */
 void fork_cmd(info_t *info)
 {
@@ -142,6 +132,7 @@ void fork_cmd(info_t *info)
 	child_pid = fork();
 	if (child_pid == -1)
 	{
+		/* TODO: PUT ERROR FUNCTION */
 		perror("Error:");
 		return;
 	}
@@ -154,6 +145,7 @@ void fork_cmd(info_t *info)
 				exit(126);
 			exit(1);
 		}
+		/* TODO: PUT ERROR FUNCTION */
 	}
 	else
 	{
@@ -165,85 +157,4 @@ void fork_cmd(info_t *info)
 				print_error(info, "Permission denied\n");
 		}
 	}
-}
-
-/**
- * is_cmd - determines if a file is executable
- * @info: pointer to the info structure
- * @path: path to the file
- *
- * Return: 1 if true, 0 otherwise
- */
-int is_cmd(info_t *info, char *path)
-{
-	struct stat st;
-	(void)info;
-
-	if (!path || stat(path, &st) == -1)
-		return (0);
-
-	return ((st.st_mode & S_IFREG) && (st.st_mode & S_IXUSR));
-}
-
-/**
- * dup_chars - function duplicates characters
- * @pathstr: pointer to the PATH string
- * @start: starting index
- * @stop: stopping index
- *
- * Return: pointer to new buffer
- */
-char *dup_chars(char *pathstr, int start, int stop)
-{
-	static char buf[1024];
-	int s = 0, j = 0;
-
-	for (j = 0, s = start; s < stop; s++)
-		if (pathstr[s] != ':')
-			buf[j++] = pathstr[s];
-	buf[j] = 0;
-	return (buf);
-}
-
-/**
- * find_path - A function to find the command in the PATH string
- * @info: pointer to the info structure
- * @pathstr: pointer to the PATH string
- * @cmd: the command to find
- *
- * Return: full path of command if found or NULL
- */
-char *find_path(info_t *info, char *pathstr, char *cmd)
-{
-	int a = 0, curr_pos = 0;
-	char *path;
-
-	if (!pathstr)
-		return (NULL);
-	if ((_strlen(cmd) > 2) && starts_with(cmd, "./"))
-	{
-		if (is_cmd(info, cmd))
-			return (cmd);
-	}
-	while (1)
-	{
-		if (!pathstr[a] || pathstr[a] == ':')
-		{
-			path = dup_chars(pathstr, curr_pos, a);
-			if (!*path)
-				_strcat(path, cmd);
-			else
-			{
-				_strcat(path, "/");
-				_strcat(path, cmd);
-			}
-			if (is_cmd(info, path))
-				return (path);
-			if (!pathstr[a])
-				break;
-			curr_pos = a;
-		}
-		a++;
-	}
-	return (NULL);
 }
